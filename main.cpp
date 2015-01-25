@@ -28,14 +28,15 @@ int main(int argc, char *argv[]) {
 
 	try {
 		f=parse_string(&b,&pc);
-		cout << "Parola Parsata con Successo!!!" << endl;
 	} catch (chaos_parser::exception::parser_exception & e) {
 		cout << "Parse exception!" << endl;
 	}
 	if (!f) {
+
 		//Se ritorna false vuol dire che la parola non fa parte della grammatica
 		cout << pc.get_formatted_err_msg();
 	} else {
+		cout << "Parola Parsata con Successo!!!" << endl;
 		// Costruzione dell'albero
 		cout << "Creo Albero" << endl;
 		string albero;

@@ -20,29 +20,40 @@ const std::string tree_node::getRuleName() const {
 	const std::string tree_node::getRuleType() const {
 		return type;
 	}
+
+	void tree_node::setValue(const std::string& value) {
+					this->value = value;
+				}
+	void tree_node::setRuleName(const std::string& rule_name){
+		this->rule_name = rule_name;
+	}
+	void tree_node::setRuleType(const std::string& type){
+			this->type = type;
+		}
+
+	const std::list<std::shared_ptr<tree_node> > tree_node::getAllChildren() const {
+			return children;
+		}
 	//aggiunge un nodo alla fine
-	void tree_node::add_back_children(std::shared_ptr<tree_node> child) {
+	void tree_node::addBackChildren(std::shared_ptr<tree_node> child) {
 		children.push_back(child);
 	}
 
 	//aggiunge un nodo all'inizio
-	void tree_node::add_front_children(std::shared_ptr<tree_node> child) {
+	void tree_node::addFrontChildren(std::shared_ptr<tree_node> child) {
 		children.push_front(child);
 	}
 
-	void tree_node::add_parent(std::shared_ptr<tree_node> p) {
+	void tree_node::addParent(std::shared_ptr<tree_node> p) {
 		parent = p;
 	}
 
-	const std::list<std::shared_ptr<tree_node> > tree_node::get_all_children() const {
-		return children;
-	}
-
-	std::shared_ptr<tree_node> tree_node::get_last_back_children() {
+	std::shared_ptr<tree_node> tree_node::getLastBackChildren() {
 		return children.back();
 	}
-	std::shared_ptr<tree_node> tree_node::get_last_front_children() {
+	std::shared_ptr<tree_node> tree_node::getLastFrontChildren() {
 		return children.front();
 	}
+
 
 };

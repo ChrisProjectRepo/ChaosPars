@@ -1,4 +1,4 @@
-//#define __INFOMACRO__
+#define __INFOMACRO__
 #include "macro.hpp"
 #include "utils.hpp"
 
@@ -31,21 +31,26 @@ namespace tree_struct {
 	void builder::make_node_rule(chaos_parser::parser_context &pc, std::string rule_name, std::vector<std::string> rules) {
 		INFO_LINE("Tocca a:"<<rule_name);
 		//Usato per appoggia le regole estratte dallo stack
-		node_stack_data data;
+		node_stack_data data_stack_rules;
 		//Creo il nodo padre che in un secondo momento andrò ad inserire dentro lo stack
 		std::shared_ptr<tree_node> node_rule = std::make_shared<tree_node>(rule_name);
-		//Iteratore per scorrere la lista di rules
-		//initializer_list<string>::iterator it;
 		for (int it = rules.size() - 1; it != -1; it--) {
-			data = tree_stack.top();
-			if (data.getRuleName() == rules[it]) {
+			data_stack_rules = tree_stack.top();
+			INFO_LINE("Nello stack cè "<<data_stack_rules.getRuleName()<<" devo levare "<<rules[it]);
+			if (data_stack_rules.getRuleName() == rules[it]) {
 				//Controllo Usato per gestire la ricorsione, cioè l'asterisco che eviene eseguito ricorsivamente
 				if (it == (rules.size() - 1)) {
 					it++;
 				}
-				//Aggiungo figlio al Padre dall'inizio visto che il primo nodo nello stack è l'ultimo dei figli della regola
-				//Quindi inserisco sempre in testa cosi il primo scorre fino all'ultima posizione
-				node_rule->add_front_children(data.getNode());
+				if((data_stack_rules.getRuleName()=="condition")||(data_stack_rules.getRuleName()=="opt_node")){
+					//In questo modo il nodo radice sarà un operatore e i figli saranno le tabelle da cui prendere i dati
+					node_rule->setRuleName(data_stack_rules.getRuleName());
+					node_rule->setValue(data_stack_rules.getNode()->getValue());
+				}else{
+					//Aggiungo figlio al Padre dall'inizio visto che il primo nodo nello stack è l'ultimo dei figli della regola
+					//Quindi inserisco sempre in testa cosi il primo scorre fino all'ultima posizione
+					node_rule->addFrontChildren(data_stack_rules.getNode());
+				}
 				tree_stack.pop();
 			}
 
@@ -66,24 +71,24 @@ namespace tree_struct {
 //Visita albero con stampa a schermo della visita in profondità
 	void tree_visit(std::shared_ptr<tree_node> x, std::string &target) {
 		//Se trovo una foglia
-		if (x->get_all_children().size() == 0) {
+		if (x->getAllChildren().size() == 0) {
 			std::string temp = (x->getValue() + " ");
 			target.append(temp);
 		} else {
 			//Se non trovo una foglia per ogni figlio del nodo richiamo la visita sui figli fino ad arrivare ad un figlio foglia
-			for (auto i : x->get_all_children()) {
+			for (auto i : x->getAllChildren()) {
 				tree_visit(i, target);
 			}
 		}
 	}
 
 	void tree_visit(std::shared_ptr<tree_node> x) {
-		if (x->get_all_children().size() == 0) {
+		if (x->getAllChildren().size() == 0) {
 			/*
 			 * Operazioni se trovo foglia
 			 */
 		} else {
-			for (auto i : x->get_all_children()) {
+			for (auto i : x->getAllChildren()) {
 				tree_visit(i);
 			}
 		}

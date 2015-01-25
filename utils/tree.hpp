@@ -35,22 +35,28 @@ public:
 
 	const std::string getRuleType()const;
 
-	const std::list<std::shared_ptr<tree_node> > get_all_children()const;
+	void setRuleName(const std::string& rule_name);
+
+	void setValue(const std::string& value);
+
+	void setRuleType(const std::string& type);
+
+	const std::list<std::shared_ptr<tree_node> > getAllChildren()const;
 
 	//aggiunge un nodo alla fine
-	void add_back_children(std::shared_ptr<tree_node> child);
+	void addBackChildren(std::shared_ptr<tree_node> child);
 
 	//aggiunge un nodo all'inizio
-	void add_front_children(std::shared_ptr<tree_node> child);
+	void addFrontChildren(std::shared_ptr<tree_node> child);
 
 	//aggiunge padre , non usata perchè non necessaria
-	void add_parent(std::shared_ptr<tree_node> p);
+	void addParent(std::shared_ptr<tree_node> p);
 
 	//restituisce ultimo nodo della lista
-	std::shared_ptr<tree_node> get_last_back_children();
+	std::shared_ptr<tree_node> getLastBackChildren();
 
 	//restituisce ultimo nodo inserito in cima
-	std::shared_ptr<tree_node> get_last_front_children();
+	std::shared_ptr<tree_node> getLastFrontChildren();
 
 };
 
