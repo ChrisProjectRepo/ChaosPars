@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 	bool f = false;
 
 	try {
-		f=parse_string(&b,&pc);
+		f=parseString(b,pc);
 	} catch (chaos_parser::exception::parser_exception & e) {
 		cout << "Parse exception!" << endl;
 	}
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 		cout << "Creo Albero" << endl;
 		string albero;
 		//Classica visita Dfs di un albero
-		tree_visit(b.get_tree_radix(), albero);
+		treeVisit(b.get_tree_radix(), albero);
 		cout << "Albero Creato con Successo" << endl;
 		cout << "Parola estratta dall'Albero = " << albero << endl;
 

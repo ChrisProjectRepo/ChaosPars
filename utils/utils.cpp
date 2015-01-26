@@ -1,4 +1,4 @@
-#define __INFOMACRO__
+//#define __INFOMACRO__
 #include "macro.hpp"
 #include "utils.hpp"
 
@@ -16,7 +16,7 @@ namespace tree_struct {
 		return rule_name;
 	}
 
-	void builder::make_leaf(chaos_parser::parser_context &pc, std::string rule_name) {
+	void builder::makeLeaf(chaos_parser::parser_context &pc, std::string rule_name) {
 		INFO_LINE("Tocca a:"<<rule_name);
 		auto x = pc.collect_tokens();
 		if (x.size() < 1)
@@ -28,7 +28,7 @@ namespace tree_struct {
 
 //Dentro Rules verrano messe le regole tab,select quindi ma nello stack in posizione top c'è select
 //quindi devo fargli prendere prima la select
-	void builder::make_node_rule(chaos_parser::parser_context &pc, std::string rule_name, std::vector<std::string> rules) {
+	void builder::makeNodeRule(chaos_parser::parser_context &pc, std::string rule_name, std::vector<std::string> rules) {
 		INFO_LINE("Tocca a:"<<rule_name);
 		//Usato per appoggia le regole estratte dallo stack
 		node_stack_data data_stack_rules;
@@ -59,9 +59,10 @@ namespace tree_struct {
 		tree_stack.push(node_stack_data(rule_name, node_rule));
 	}
 
-	void builder::position_order(std::string type_term) {
-		INFO_LINE("Tocca a:"<<type_term);
-	}
+
+//	void builder::position_order(std::string type_term) {
+//		INFO_LINE("Tocca a:"<<type_term);
+//	}
 
 	std::shared_ptr<tree_node> builder::get_tree_radix() {
 		node_stack_data data = tree_stack.top();
@@ -69,7 +70,7 @@ namespace tree_struct {
 	}
 
 //Visita albero con stampa a schermo della visita in profondità
-	void tree_visit(std::shared_ptr<tree_node> x, std::string &target) {
+	void treeVisit(std::shared_ptr<tree_node> x, std::string &target) {
 		//Se trovo una foglia
 		if (x->getAllChildren().size() == 0) {
 			std::string temp = (x->getValue() + " ");
@@ -77,19 +78,19 @@ namespace tree_struct {
 		} else {
 			//Se non trovo una foglia per ogni figlio del nodo richiamo la visita sui figli fino ad arrivare ad un figlio foglia
 			for (auto i : x->getAllChildren()) {
-				tree_visit(i, target);
+				treeVisit(i, target);
 			}
 		}
 	}
 
-	void tree_visit(std::shared_ptr<tree_node> x) {
+	void treeVisit(std::shared_ptr<tree_node> x) {
 		if (x->getAllChildren().size() == 0) {
 			/*
 			 * Operazioni se trovo foglia
 			 */
 		} else {
 			for (auto i : x->getAllChildren()) {
-				tree_visit(i);
+				treeVisit(i);
 			}
 		}
 	}

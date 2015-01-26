@@ -4,7 +4,7 @@
 #include "query_parser.hpp"
 
 namespace chaos_parser{
-		bool parse_string(tree_struct::builder* b,chaos_parser::parser_context *pc);
+		bool parseString(tree_struct::builder &b,chaos_parser::parser_context &pc);
 
 }
 #endif

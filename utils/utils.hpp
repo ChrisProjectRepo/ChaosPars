@@ -36,21 +36,18 @@ namespace tree_struct {
 			std::stack<node_stack_data> tree_stack;
 
 		public:
-			void make_leaf(chaos_parser::parser_context &pc, std::string rule_name);
+			void makeLeaf(chaos_parser::parser_context &pc, std::string rule_name);
+			void makeNodeRule(chaos_parser::parser_context &pc, std::string rule_name, std::vector<std::string> rules);
 
-//Dentro Rules verrano messe le regole tab,select quindi ma nello stack in posizione top c'è select
-//quindi devo fargli prendere prima la select
-			void make_node_rule(chaos_parser::parser_context &pc, std::string rule_name, std::vector<std::string> rules);
-
-			void position_order(std::string type_term);
+//			void position_order(std::string type_term);
 
 			std::shared_ptr<tree_node> get_tree_radix();
 
 	};
 
 //Funzione usata per la visita ricorsiva dell'albero di Query
-	void tree_visit(std::shared_ptr<tree_node> x, std::string &target);
-	void tree_visit(std::shared_ptr<tree_node> x);
+	void treeVisit(std::shared_ptr<tree_node> x, std::string &target);
+	void treeVisit(std::shared_ptr<tree_node> x);
 
 }
 
