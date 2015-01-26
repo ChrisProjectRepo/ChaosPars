@@ -11,6 +11,9 @@
 
 namespace chaos_parser {
 
+	//  Implementazione delle regole
+			struct impl_rule;
+
 	//Definizione del parser
 	//Di base vengono usati i token definiti globalmente nel namespace
 	class parser_context {
@@ -55,11 +58,10 @@ namespace chaos_parser {
 			std::vector<token_val> collect_tokens();
 	};
 
-//  Implementazione delle regole
-	struct impl_rule;
 
-// The action function which is passed the parser context
-	typedef std::function<void(parser_context &)> action_t;
+
+	// The action function which is passed the parser context
+		typedef std::function<void(parser_context &)> action_t;
 
 //Classe che definisce la regola con tutti i metodi per interagire tra loro
 	class rule {
