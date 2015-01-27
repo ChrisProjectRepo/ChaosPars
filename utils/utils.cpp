@@ -18,7 +18,7 @@ namespace tree_struct {
 
 	void builder::makeLeaf(chaos_parser::parser_context &pc, std::string rule_name) {
 		INFO_LINE("Tocca a:"<<rule_name);
-		auto x = pc.collect_tokens();
+		auto x = pc.collectTokens();
 		if (x.size() < 1)
 			throw std::string("Error in collecting variable");
 		std::string value = x[x.size() - 1].second;

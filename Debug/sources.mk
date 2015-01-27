@@ -25,6 +25,5 @@ C_UPPER_DEPS :=
 SUBDIRS := \
 utils \
 parser \
-parser/engine \
 . \
 

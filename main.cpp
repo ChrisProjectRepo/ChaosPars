@@ -1,6 +1,6 @@
 #include "./parser/parser_exception.hpp"
-#include "./parser/rules.hpp"
 #include <sstream>
+#include "parser/rules_implementation.hpp"
 
 using namespace chaos_parser;
 using namespace tree_struct;
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 
 	//Parser e preparazione dello stream da cui prendere i dati
 	parser_context pc;
-	pc.set_stream(str);
+	pc.setStream(str);
 
 	bool f = false;
 
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 	if (!f) {
 
 		//Se ritorna false vuol dire che la parola non fa parte della grammatica
-		cout << pc.get_formatted_err_msg();
+		cout << pc.getFormattedErrMsg();
 	} else {
 		cout << "Parola Parsata con Successo!!!" << endl;
 		// Costruzione dell'albero

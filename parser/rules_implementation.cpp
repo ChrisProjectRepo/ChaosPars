@@ -1,4 +1,5 @@
-#include "rules.hpp"
+#include "rules_implementation.hpp"
+
 #include "functional"
 
 
@@ -41,37 +42,38 @@ namespace chaos_parser{
 			rule condition_node=where_node>>opt_node>>*condition_node|where_node;
 
 			rule condition_init=where_node|condition_node;
+//
+//			rule keyword_and = keyword("and");
+//			rule keyword_or = keyword("or");
+//			rule lparen = rule('(');
+//			rule rparen = rule(')');
 
-			rule keyword_and = keyword("and");
-			rule keyword_or = keyword("or");
-			rule lparen = rule('(');
-			rule rparen = rule(')');
-
-			class recursive_rule : public rule {
-					rule rl;
-				public:
-					recursive_rule();
-					void bind(rule);
-					virtual bool parse(parser_context &);
-			};
-
-			recursive_rule::recursive_rule() : rule(), rl(null()) {
-			}
-
-			void recursive_rule::bind(rule rl) {
-				this->rl = rl;
-			}
-
-			bool recursive_rule::parse(parser_context &pc) {
-				this->rl->parse();
-			}
-
-			recursive_rule x;
-			rule z = where_node | (lparen >> x >> rparen);
-			rule y = z >> *(keyword_and >> z);
-			x.bind(y >> *(keyword_or >> y)); // bind = set_pimpl
-
-			rule where = keyword_where >>x;
+//			class recursive_rule : public rule {
+//					rule rl;
+//				public:
+//					recursive_rule();
+//					void bind(rule);
+//					virtual bool parse(parser_context &);
+//			};
+//
+//			recursive_rule::recursive_rule() : rule(), rl(null()) {
+//			}
+//
+//			void recursive_rule::bind(rule rl) {
+//				this->rl = rl;
+//			}
+//
+//			bool recursive_rule::parse(parser_context &pc) {
+//				this->rl->parse();
+//			}
+//
+//			recursive_rule x;
+//			rule z = where_node | (lparen >> x >> rparen);
+//			rule y = z >> *(keyword_and >> z);
+//			rule f=y >> *(keyword_or >> y);
+//			x.bind(f); // bind = set_pimpl
+//
+			rule where = keyword_where >>condition_init;//x
 
 
 			//Rule Query

@@ -10,6 +10,7 @@
 #define LEX_ERROR -1
 
 namespace chaos_parser{
+
 	namespace exception{
 		//Classe usata per gestire le eccezioni lanciate dal parser
 	    class parser_exception : public std::exception {
