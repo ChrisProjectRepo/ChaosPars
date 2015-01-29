@@ -1,9 +1,3 @@
-/*
- * head_lexer.cpp
- *
- *  Created on: 08/gen/2015
- *      Author: cicciox
- */
 //#define _INFOMACRO_ 1
 #include "head_lexer.hpp"
 #include <boost/regex.hpp>
@@ -34,7 +28,7 @@ namespace chaos_parser {
 
 		INFO_LINE("get_token(): start is at \"" << *start << "\"");
 		INFO_LINE(curr_line);
-		INFO_LINE(std::setw(ncol) << "^");
+	//	INFO_LINE(std::setw(ncol) << "^");
 
 		// try to identify which token
 		for (auto x:array) {

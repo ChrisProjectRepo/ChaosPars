@@ -1,6 +1,6 @@
-//#define __INFOMACRO__
-#include "macro.hpp"
 #include "utils.hpp"
+#define __INFOMACRO__
+#include "macro.hpp"
 
 namespace tree_struct {
 
@@ -38,15 +38,15 @@ namespace tree_struct {
 			data_stack_rules = tree_stack.top();
 			INFO_LINE("Nello stack cè "<<data_stack_rules.getRuleName()<<" devo levare "<<rules[it]);
 			if (data_stack_rules.getRuleName() == rules[it]) {
-				//Controllo Usato per gestire la ricorsione, cioè l'asterisco che eviene eseguito ricorsivamente
+				//Controllo Usato per gestire la ripetizione, cioè l'asterisco che eviene eseguito ricorsivamente
 				if (it == (rules.size() - 1)) {
 					it++;
 				}
-				if((data_stack_rules.getRuleName()=="condition")||(data_stack_rules.getRuleName()=="opt_node")){
+				if ((data_stack_rules.getRuleName() == "condition") || (data_stack_rules.getRuleName() == "opt_node")) {
 					//In questo modo il nodo radice sarà un operatore e i figli saranno le tabelle da cui prendere i dati
 					node_rule->setRuleName(data_stack_rules.getRuleName());
 					node_rule->setValue(data_stack_rules.getNode()->getValue());
-				}else{
+				} else {
 					//Aggiungo figlio al Padre dall'inizio visto che il primo nodo nello stack è l'ultimo dei figli della regola
 					//Quindi inserisco sempre in testa cosi il primo scorre fino all'ultima posizione
 					node_rule->addFrontChildren(data_stack_rules.getNode());
@@ -58,7 +58,6 @@ namespace tree_struct {
 		//Infine aggiugiamo nello stack la regola di produzione
 		tree_stack.push(node_stack_data(rule_name, node_rule));
 	}
-
 
 //	void builder::position_order(std::string type_term) {
 //		INFO_LINE("Tocca a:"<<type_term);
@@ -73,11 +72,15 @@ namespace tree_struct {
 	void treeVisit(std::shared_ptr<tree_node> x, std::string &target) {
 		//Se trovo una foglia
 		if (x->getAllChildren().size() == 0) {
-			std::string temp = (x->getValue() + " ");
-			target.append(temp);
+				std::string temp = (x->getValue() + " ");
+				target.append(temp);
 		} else {
 			//Se non trovo una foglia per ogni figlio del nodo richiamo la visita sui figli fino ad arrivare ad un figlio foglia
 			for (auto i : x->getAllChildren()) {
+				if ((i->getRuleName() == "condition") || (i->getRuleName() == "opt_node")) {
+					std::string temp = (i->getRuleName() + " ");
+					target.append(temp);
+				}
 				treeVisit(i, target);
 			}
 		}

@@ -14,8 +14,10 @@ int main(int argc, char *argv[]) {
 	builder b;
 
 	// Stringa da parsare
-	stringstream str("select device.storage_key , device_2.storage_key from device,device_2 where device.storage_id=device_2.storageid;");
+	stringstream str("select device.storage_key , device_2.storage_key from device,device_2 where device.storage_id = device_2.storageid and cevice.ftorage_id = aevice_2.storageid");
 	// Stringa da parsare presa da terminale come argomento
+//	stringstream str("a+(b)");
+
 	//stringstream str(argv[1]);
 
 	cout << "String to parse: " << str.str() << endl;

@@ -63,6 +63,7 @@ namespace chaos_parser {
 //Classe che definisce la regola con tutti i metodi per interagire tra loro
 	class rule {
 			//Puntatore all'implementazione della regola
+		public:
 			std::shared_ptr<impl_rule> pimpl;
 		public:
 			// Costruttore vuoto
@@ -88,6 +89,7 @@ namespace chaos_parser {
 			rule& operator[](action_t af);
 
 			explicit rule(std::shared_ptr<impl_rule> ir);
+
 			std::shared_ptr<impl_rule> get_pimpl() {
 				return pimpl;
 			}
@@ -98,7 +100,7 @@ namespace chaos_parser {
 		public:
 			recursive_rule();
 			void bind(rule);
-			 bool parse(parser_context &);
+			bool parse(parser_context &);
 
 	};
 

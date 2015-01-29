@@ -1,10 +1,11 @@
+//#define __INFOMACRO__
+
+#include "../utils/macro.hpp"
 #include "parser_engine.hpp"
 #include "parser_exception.hpp"
-#include "../utils/macro.hpp"
 #include <sstream>
 
 namespace chaos_parser {
-
 
 	parser_context::parser_context() :
 			lex { } {
@@ -88,7 +89,6 @@ namespace chaos_parser {
 	/* ----------------------------------------------- */
 
 //	 Classe Astratta che verra implementata da ogni regola per definire le azioni
-
 	class abs_rule {
 		protected:
 			action_t fun;
@@ -119,35 +119,35 @@ namespace chaos_parser {
 	}
 
 	//	 Implementazione delle regole , struttura dati che contiene puntatore all'implementazione della regola*/
-		struct impl_rule {
-				std::shared_ptr<abs_rule> abs_impl;
+	struct impl_rule {
+			std::shared_ptr<abs_rule> abs_impl;
 
-				impl_rule() :
-						abs_impl(nullptr) {
-				}
-				impl_rule(abs_rule *r) :
-						abs_impl(r) {
-				}
+			impl_rule() :
+					abs_impl(nullptr) {
+			}
+			impl_rule(abs_rule *r) :
+					abs_impl(r) {
+			}
 
-				bool parse(parser_context &pc) {
-					if (!abs_impl)
-						return false;
+			bool parse(parser_context &pc) {
+				if (!abs_impl)
+					return false;
 
-					bool f = abs_impl->parse(pc);
-					if (f)
-						abs_impl->action(pc);
-					return f;
-				}
-				bool action(parser_context &pc) {
-					if (!abs_impl)
-						return false;
-					return abs_impl->action(pc);
-				}
-				void install_action(action_t f) {
-					abs_impl->install_action(f);
-				}
+				bool f = abs_impl->parse(pc);
+				if (f)
+					abs_impl->action(pc);
+				return f;
+			}
+			bool action(parser_context &pc) {
+				if (!abs_impl)
+					return false;
+				return abs_impl->action(pc);
+			}
+			void install_action(action_t f) {
+				abs_impl->install_action(f);
+			}
 
-		};
+	};
 
 	/* ----------------------------------------------- */
 
@@ -238,7 +238,6 @@ namespace chaos_parser {
 
 	/* ----------------------------------------------- */
 
-
 //	  Classe che definisce la sequenza di regole da valutare
 	class seq_rule: public abs_rule {
 			std::vector<std::shared_ptr<impl_rule> > rl;
@@ -253,11 +252,11 @@ namespace chaos_parser {
 	seq_rule::seq_rule(rule a, rule b) {
 		rl.push_back(a.get_pimpl());
 		rl.push_back(b.get_pimpl());
+
 	}
 
 	bool seq_rule::parse(parser_context &pc) {
 		INFO("seq_rule::parse()");
-
 		pc.save();
 		for (auto &x : rl) {
 			if (!x->parse(pc)) {
@@ -339,7 +338,6 @@ namespace chaos_parser {
 
 	bool rep_rule::parse(parser_context &pc) {
 		INFO("rep_rule::parse() | ");
-
 		while (rl->parse(pc)) {
 			INFO("*");
 		}
@@ -431,7 +429,6 @@ namespace chaos_parser {
 		return rule(s);
 	}
 
-
 	class strict_seq_rule: public abs_rule {
 			std::vector<std::shared_ptr<impl_rule> > rl;
 		public:
@@ -447,7 +444,6 @@ namespace chaos_parser {
 
 	bool strict_seq_rule::parse(parser_context &pc) {
 		INFO("strict_seq_rule::parse()");
-
 		int i = 0;
 		for (auto &x : rl) {
 			if (!x->parse(pc)) {
@@ -479,16 +475,17 @@ namespace chaos_parser {
 		return rule(s);
 	}
 
-	recursive_rule::recursive_rule():rule(),rl(null()){
-
+	recursive_rule::recursive_rule() :
+			rule(), rl(null()) {
 	}
 
 	void recursive_rule::bind(rule rl) {
-					this->rl = rl;
-				}
+		pimpl->abs_impl = rl.pimpl->abs_impl;
+		INFO_LINE("Regola Bindata: "<<rl.get_pimpl());
+	}
 
 	bool recursive_rule::parse(parser_context &pc) {
-					this->rl->parse();
-				}
+		return rule::parse(pc);
+	}
 
 }
