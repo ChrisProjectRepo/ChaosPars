@@ -14,9 +14,10 @@ int main(int argc, char *argv[]) {
 	builder b;
 
 	// Stringa da parsare
-	stringstream str("select device.storage_key , device_2.storage_key from device,device_2 where device.storage_id = device_2.storageid and cevice.ftorage_id = aevice_2.storageid");
+	stringstream str("select device.storage_key from device where device.storageid > device_2.storageid");
 	// Stringa da parsare presa da terminale come argomento
-//	stringstream str("a+(b)");
+//	stringstream str("av");
+//	stringstream str("select device.storage_key from device where a.g > a.h");
 
 	//stringstream str(argv[1]);
 
@@ -29,7 +30,7 @@ int main(int argc, char *argv[]) {
 	bool f = false;
 
 	try {
-		f=parseString(b,pc);
+		f = parseString(b, pc);
 	} catch (chaos_parser::exception::parser_exception & e) {
 		cout << "Parse exception!" << endl;
 	}

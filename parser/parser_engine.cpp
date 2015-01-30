@@ -476,12 +476,12 @@ namespace chaos_parser {
 	}
 
 	recursive_rule::recursive_rule() :
-			rule(), rl(null()) {
+			rule() {
 	}
 
 	void recursive_rule::bind(rule rl) {
 		pimpl->abs_impl = rl.pimpl->abs_impl;
-		INFO_LINE("Regola Bindata: "<<rl.get_pimpl());
+		INFO_LINE("Regola Bindata	: "<<rl.get_pimpl());
 	}
 
 	bool recursive_rule::parse(parser_context &pc) {
