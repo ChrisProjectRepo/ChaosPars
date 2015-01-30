@@ -101,9 +101,8 @@ namespace chaos_parser {
 
 		recursive_rule rwhere;
 		rule where = keyword_where >> rwhere;
-		rule cond_and = (where_node >> keyword_and >> rwhere);
-		rule cond_or = (where_node >> keyword_or >> rwhere);
-		rwhere.bind(cond_and | cond_or | where_node);
+		rule multi_where = (where_node >> (keyword_and|keyword_or) >> rwhere);
+		rwhere.bind(multi_where | where_node);
 
 		//Rule Query
 		rule query = select >> from >> where;
@@ -121,9 +120,9 @@ namespace chaos_parser {
 		from_prop[bind(&tree_struct::builder::makeNodeRule, &b, _1, "from_prop", vector<string> { "tab_key" })];
 
 		where[bind(&tree_struct::builder::makeNodeRule, &b, _1, "where", vector<string> { "keyword_where", "rwhere" })];
-		cond_and[bind(&tree_struct::builder::makeNodeRule, &b, _1, "cond_and", vector<string> { "where_node", "keyword_and", "rwhere" })];
-		cond_or[bind(&tree_struct::builder::makeNodeRule, &b, _1, "cond_or", vector<string> { "where_node", "keyword_or", "rwhere" })];
-		rwhere[bind(&tree_struct::builder::makeNodeRule, &b, _1, "rwhere", vector<string> { "cond_and", "cond_or", "where_node" })];
+		multi_where[bind(&tree_struct::builder::makeNodeRule, &b, _1, "multi_where", vector<string> { "where_node", "keyword_and","keyword_or","rwhere" })];
+	//	single_where[bind(&tree_struct::builder::makeRecursiveNodeRule, &b, _1, "single_where", "where_node")];
+		rwhere[bind(&tree_struct::builder::makeRecursiveNodeRule, &b, _1, "rwhere", vector<string> { "multi_where", "where_node"})];
 		where_node[bind(&tree_struct::builder::makeNodeRule, &b, _1, "where_node", vector<string> { "select_element", "condition", "tab_key", "select_key" })];
 
 		select_element[bind(&tree_struct::builder::makeNodeRule, &b, _1, "select_element", vector<string> { "tab_key", "select_key" })];
