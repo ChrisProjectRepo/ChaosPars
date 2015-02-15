@@ -96,6 +96,7 @@ namespace chaos_parser {
 	};
 
 	class recursive_rule: public rule {
+
 		public:
 			recursive_rule();
 			void bind(rule);

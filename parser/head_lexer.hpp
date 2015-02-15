@@ -12,7 +12,7 @@
 
 namespace chaos_parser {
 
-	//	Classe usate come interfaccia dell'Analizzatore Lessica senza dover istanziare il lexer e il parser
+	//	Classe usate per utilizzare l'Analizzatore Lessica senza dover istanziare il parser
 
 	class head_lexer: public lexer {
 			std::vector<token> array;

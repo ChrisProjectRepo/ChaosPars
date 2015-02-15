@@ -28,6 +28,7 @@ namespace chaos_parser {
 	std::string expr;
     };
 
+    //Definiamo token_val come la coppia di ID del token e la stringa
     typedef std::pair<token_id, std::string> token_val;
 
     // Id globale per identificare i token
@@ -37,7 +38,7 @@ namespace chaos_parser {
     const int LEX_EXTRACTED_STRING = (LEX_LIB_BASE + 3);
     const int LEX_CHAR        = (LEX_LIB_BASE + 4);
 
-    //Definisco in toke piu usati
+    //Definisco in token piu usati
     //Rappresento Interi, e prendo tutti i digit a partire da inizio stringa una o più volte e prendo intero solo con spazio vuoto dopo,perchè seno lo vedo come stringa
     const token tk_int(LEX_INT, "^\\d+\\b"); 
     //Rappresento le Stringhe che non iniziano per un intero e un non-word.E prendo invece tutto il resto della stringa con w*

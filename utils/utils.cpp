@@ -1,5 +1,5 @@
 #include "utils.hpp"
-#define __INFOMACRO__
+//#define __INFOMACRO__
 #include "macro.hpp"
 
 namespace tree_struct {
@@ -42,9 +42,10 @@ namespace tree_struct {
 				if (it == (rules.size() - 1)) {
 					it++;
 				}
-				if ((data_stack_rules.getRuleName() == "condition") || (data_stack_rules.getRuleName() == "keyword_and")||(data_stack_rules.getRuleName() == "keyword_or")) {
+				if ((data_stack_rules.getRuleName() == "condition") || (data_stack_rules.getRuleName() == "keyword_and")
+						|| (data_stack_rules.getRuleName() == "keyword_or")) {
 
-					INFO_LINE("CHANGE NOME DEL PADRE: "<<data_stack_rules.getRuleName());
+					INFO_LINE("CAMBIO NOME DEL PADRE: "<<data_stack_rules.getRuleName());
 					//In questo modo il nodo radice sarà un operatore e i figli saranno le tabelle da cui prendere i dati
 					node_rule->setRuleName(data_stack_rules.getRuleName());
 					node_rule->setValue(data_stack_rules.getNode()->getValue());
@@ -84,8 +85,10 @@ namespace tree_struct {
 			}
 
 		}
-		//elemento che rimane nello stack a causa della chiamata prima;
-		if(tree_stack.top().getRuleName()=="where_node"){
+//		elemento che rimane nello stack a causa della chiamata ricosiva, perchè quando torna indietro nello stack inserisce where_node
+//		anche se dopo interrompe il cammino e cambia percorso di parsing,infatti quando poi cambia e fa where_node prima di fargli
+//		inserire rwhere levo tutti i 2 i where_node presenti. Uno di questi sarà il figlio di rwhere e sara la terminazione dell'iterazione
+		if (tree_stack.top().getRuleName() == "where_node") {
 			tree_stack.pop();
 			INFO_LINE("STO POPPANDO: "<<tree_stack.top().getRuleName());
 		}
@@ -102,8 +105,8 @@ namespace tree_struct {
 	void treeVisit(std::shared_ptr<tree_node> x, std::string &target) {
 		//Se trovo una foglia
 		if (x->getAllChildren().size() == 0) {
-				std::string temp = (x->getValue() + " ");
-				target.append(temp);
+			std::string temp = (x->getValue() + " ");
+			target.append(temp);
 		} else {
 			//Se non trovo una foglia per ogni figlio del nodo richiamo la visita sui figli fino ad arrivare ad un figlio foglia
 			for (auto i : x->getAllChildren()) {

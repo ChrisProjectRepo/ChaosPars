@@ -1,66 +1,9 @@
 #include "rules_implementation.hpp"
-
 #include "functional"
-
 using namespace std;
 using namespace std::placeholders;
 
 namespace chaos_parser {
-
-	namespace rules {
-	//Rule  Terminali
-//			rule keyword_select = keyword("select");
-//			rule keyword_from = keyword("from");
-//			rule keyword_where = keyword("where");
-//			rule select_key = rule(tk_ident);
-//			rule tab_key = rule(tk_ident);
-//			rule opt_node = keyword("and") | keyword("or");
-//			rule condition = rule('>', true) | rule('<', true) | rule('=', true);
-//			rule end_query = rule(';', true);
-//			rule point_key = rule('.');
-//			rule comma_key = rule(',', true);
-//
-//			//Inteso come nodo "." con all'interno come figli la tabella e la selezione
-//			rule select_operation = tab_key >>point_key>>select_key;
-//
-//			//Rule Select
-//
-//			rule select_prop = comma_key >> select_operation;
-//			rule select = keyword_select >> select_operation >> *select_prop;
-//
-//			//Rule From
-//
-//			rule from_prop = comma_key >> tab_key;
-//			rule from = keyword_from >> tab_key >> *from_prop;
-//
-//			//Rule Where
-//
-//			rule where_node = select_operation >> condition >> select_operation;
-//
-//			rule condition_node=where_node>>opt_node>>*condition_node|where_node;
-//
-//			rule condition_init=where_node|condition_node;
-//
-//			rule keyword_and = keyword("and");
-//			rule keyword_or = keyword("or");
-//			rule lparen = rule('(');
-//			rule rparen = rule(')');
-//
-//			recursive_rule x;
-//			rule z = where_node | (lparen >> x >> rparen);
-//			rule y = z >> *(keyword_and >> z);
-//			rule f=y >> *(keyword_or >> y);
-//
-//
-//			// bind = set_pimpl
-//
-//			rule where = keyword_where >>condition_init;//x
-//			rule where=keyword_where>>x;
-//
-//			//Rule Query
-//			rule query = select >> from >> where >> end_query;
-
-	}
 
 	bool parseString(tree_struct::builder &b, parser_context &pc) {
 
@@ -121,7 +64,6 @@ namespace chaos_parser {
 
 		where[bind(&tree_struct::builder::makeNodeRule, &b, _1, "where", vector<string> { "keyword_where", "rwhere" })];
 		multi_where[bind(&tree_struct::builder::makeNodeRule, &b, _1, "multi_where", vector<string> { "where_node", "keyword_and","keyword_or","rwhere" })];
-	//	single_where[bind(&tree_struct::builder::makeRecursiveNodeRule, &b, _1, "single_where", "where_node")];
 		rwhere[bind(&tree_struct::builder::makeRecursiveNodeRule, &b, _1, "rwhere", vector<string> { "multi_where", "where_node"})];
 		where_node[bind(&tree_struct::builder::makeNodeRule, &b, _1, "where_node", vector<string> { "select_element", "condition", "tab_key", "select_key" })];
 
@@ -139,15 +81,6 @@ namespace chaos_parser {
 		keyword_select[bind(&tree_struct::builder::makeLeaf, &b, _1, "keyword_select")];
 		keyword_from[bind(&tree_struct::builder::makeLeaf, &b, _1, "keyword_from")];
 		keyword_where[bind(&tree_struct::builder::makeLeaf, &b, _1, "keyword_where")];
-
-		/////////////////////// BIND /////////////////
-
-//		recursive_rule x;
-//		rule a=rule('a');
-//		rule v=rule('v');
-//		rule plus=rule('+');
-//		rule S=a>>x;
-//		x.bind((v>>plus>>x)|v);
 
 		return query.parse(pc);
 	}
