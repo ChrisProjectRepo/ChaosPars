@@ -10,7 +10,7 @@
 
 #include <stack>
 #include <vector>
-#include "../parser/query_parser.hpp"
+#include "../parser/parser_engine.hpp"
 #include "tree.hpp"
 
 namespace tree_struct {
@@ -38,8 +38,7 @@ namespace tree_struct {
 		public:
 			void makeLeaf(chaos_parser::parser_context &pc, std::string rule_name);
 			void makeNodeRule(chaos_parser::parser_context &pc, std::string rule_name, std::vector<std::string> rules);
-
-//			void position_order(std::string type_term);
+			void makeRecursiveNodeRule(chaos_parser::parser_context &pc, std::string rule_name, std::vector<std::string> rules);
 
 			std::shared_ptr<tree_node> get_tree_radix();
 

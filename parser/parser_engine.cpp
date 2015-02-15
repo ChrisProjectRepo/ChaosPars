@@ -1,7 +1,8 @@
-//#define _INFOMACRO_ 1
-#include "query_parser.hpp"
-#include "parser_exception.hpp"
+//#define __INFOMACRO__
+
 #include "../utils/macro.hpp"
+#include "parser_engine.hpp"
+#include "parser_exception.hpp"
 #include <sstream>
 
 namespace chaos_parser {
@@ -10,18 +11,18 @@ namespace chaos_parser {
 			lex { } {
 	}
 
-	void parser_context::set_stream(std::istream &in) {
+	void parser_context::setStream(std::istream &in) {
 		lex.set_stream(in);
 		collected.clear();
 		while (!ncoll.empty())
 			ncoll.pop();
 	}
 
-	void parser_context::set_comment(const std::string &comment_begin, const std::string &comment_end, const std::string &comment_single_line) {
+	void parser_context::setComment(const std::string &comment_begin, const std::string &comment_end, const std::string &comment_single_line) {
 		lex.set_comment(comment_begin, comment_end, comment_single_line);
 	}
 
-	token_val parser_context::try_token(const token &tk) {
+	token_val parser_context::tryToken(const token &tk) {
 		return lex.try_token(tk);
 	}
 
@@ -29,15 +30,15 @@ namespace chaos_parser {
 		return lex.extract(op, cl);
 	}
 
-	std::string parser_context::extract_line() {
+	std::string parser_context::extractLine() {
 		return lex.extract_line();
 	}
 
-	void parser_context::push_token(token_val tk) {
+	void parser_context::pushToken(token_val tk) {
 		collected.push_back(tk);
 	}
 
-	void parser_context::push_token(const std::string &s) {
+	void parser_context::pushToken(const std::string &s) {
 		collected.push_back( { LEX_EXTRACTED_STRING, s });
 	}
 
@@ -54,26 +55,26 @@ namespace chaos_parser {
 			collected.pop_back();
 	}
 
-	void parser_context::discard_saved() {
+	void parser_context::discardSaved() {
 		lex.discard_saved();
 		ncoll.pop();
 	}
 
-	token_val parser_context::get_last_token() {
+	token_val parser_context::getLastToken() {
 		return collected[collected.size() - 1];
 	}
 
-	std::vector<token_val> parser_context::collect_tokens() {
+	std::vector<token_val> parser_context::collectTokens() {
 		auto c = collected;
 		collected.clear();
 		return c;
 	}
 
-	void parser_context::set_error(const token_val &err_msg) {
+	void parser_context::setError(const token_val &err_msg) {
 		error_token_msg = err_msg;
 	}
 
-	std::string parser_context::get_formatted_err_msg() {
+	std::string parser_context::getFormattedErrMsg() {
 		std::stringstream err;
 		err << "At line " << lex.get_pos().first << ", column " << lex.get_pos().second << std::endl;
 		err << lex.get_currline() << std::endl;
@@ -88,7 +89,6 @@ namespace chaos_parser {
 	/* ----------------------------------------------- */
 
 //	 Classe Astratta che verra implementata da ogni regola per definire le azioni
-
 	class abs_rule {
 		protected:
 			action_t fun;
@@ -119,35 +119,35 @@ namespace chaos_parser {
 	}
 
 	//	 Implementazione delle regole , struttura dati che contiene puntatore all'implementazione della regola*/
-		struct impl_rule {
-				std::shared_ptr<abs_rule> abs_impl;
+	struct impl_rule {
+			std::shared_ptr<abs_rule> abs_impl;
 
-				impl_rule() :
-						abs_impl(nullptr) {
-				}
-				impl_rule(abs_rule *r) :
-						abs_impl(r) {
-				}
+			impl_rule() :
+					abs_impl(nullptr) {
+			}
+			impl_rule(abs_rule *r) :
+					abs_impl(r) {
+			}
 
-				bool parse(parser_context &pc) {
-					if (!abs_impl)
-						return false;
+			bool parse(parser_context &pc) {
+				if (!abs_impl)
+					return false;
 
-					bool f = abs_impl->parse(pc);
-					if (f)
-						abs_impl->action(pc);
-					return f;
-				}
-				bool action(parser_context &pc) {
-					if (!abs_impl)
-						return false;
-					return abs_impl->action(pc);
-				}
-				void install_action(action_t f) {
-					abs_impl->install_action(f);
-				}
+				bool f = abs_impl->parse(pc);
+				if (f)
+					abs_impl->action(pc);
+				return f;
+			}
+			bool action(parser_context &pc) {
+				if (!abs_impl)
+					return false;
+				return abs_impl->action(pc);
+			}
+			void install_action(action_t f) {
+				abs_impl->install_action(f);
+			}
 
-		};
+	};
 
 	/* ----------------------------------------------- */
 
@@ -222,22 +222,21 @@ namespace chaos_parser {
 
 	bool term_rule::parse(parser_context &pc) {
 		INFO_LINE("term_rule::parse() trying " << mytoken.get_expr());
-		token_val result = pc.try_token(mytoken);
+		token_val result = pc.tryToken(mytoken);
 		INFO_LINE("term_rule::parse() completed on " << result.first);
 		if (result.first == mytoken.get_name()) {
 			INFO_LINE(" ** ok");
 			if (collect)
-				pc.push_token(result);
+				pc.pushToken(result);
 			return true;
 		} else {
 			INFO_LINE(" ** FALSE");
-			pc.set_error(result);
+			pc.setError(result);
 			return false;
 		}
 	}
 
 	/* ----------------------------------------------- */
-
 
 //	  Classe che definisce la sequenza di regole da valutare
 	class seq_rule: public abs_rule {
@@ -253,15 +252,15 @@ namespace chaos_parser {
 	seq_rule::seq_rule(rule a, rule b) {
 		rl.push_back(a.get_pimpl());
 		rl.push_back(b.get_pimpl());
+
 	}
 
 	bool seq_rule::parse(parser_context &pc) {
 		INFO("seq_rule::parse()");
-
 		pc.save();
 		for (auto &x : rl) {
 			if (!x->parse(pc)) {
-				pc.set_error( { ERR_PARSE_SEQ, "Wrong element in sequence" });
+				pc.setError( { ERR_PARSE_SEQ, "Wrong element in sequence" });
 				INFO_LINE(" ** FALSE ");
 				pc.restore();
 				return false;
@@ -299,7 +298,7 @@ namespace chaos_parser {
 				INFO_LINE(" ** ok");
 				return true;
 			}
-		pc.set_error( { ERR_PARSE_ALT, "None of the alternatives parsed correctly" });
+		pc.setError( { ERR_PARSE_ALT, "None of the alternatives parsed correctly" });
 		INFO_LINE(" ** FALSE");
 		return false;
 	}
@@ -339,7 +338,6 @@ namespace chaos_parser {
 
 	bool rep_rule::parse(parser_context &pc) {
 		INFO("rep_rule::parse() | ");
-
 		while (rl->parse(pc)) {
 			INFO("*");
 		}
@@ -367,9 +365,9 @@ namespace chaos_parser {
 			bool parse(parser_context &pc) {
 				INFO("extr_rule::parse()");
 				token open_tk = { LEX_CHAR, padding(open_sym) };
-				if (pc.try_token(open_tk).first == LEX_CHAR) {
+				if (pc.tryToken(open_tk).first == LEX_CHAR) {
 					if (line) {
-						pc.push_token(pc.extract_line());
+						pc.pushToken(pc.extractLine());
 						INFO_LINE(" ** ok");
 						//pc.next_token();
 						return true;
@@ -377,7 +375,7 @@ namespace chaos_parser {
 					std::string o = "";
 					if (nested)
 						o = open_sym;
-					pc.push_token(pc.extract(o, close_sym));
+					pc.pushToken(pc.extract(o, close_sym));
 					INFO_LINE(" ** ok");
 					//pc.next_token();
 					return true;
@@ -402,8 +400,8 @@ namespace chaos_parser {
 	bool keyword_rule::parse(parser_context &pc) {
 		pc.save();
 		bool flag = rl.parse(pc);
-		if (flag && pc.get_last_token().second == kw) {
-			pc.discard_saved();
+		if (flag && pc.getLastToken().second == kw) {
+			pc.discardSaved();
 			return true;
 		} else {
 			pc.restore();
@@ -411,7 +409,7 @@ namespace chaos_parser {
 		}
 	}
 
-	rule extract_rule(const std::string &op, const std::string &cl) {
+	rule extractRule(const std::string &op, const std::string &cl) {
 		auto s = std::make_shared<impl_rule>(new extr_rule(op, cl));
 		return rule(s);
 	}
@@ -421,7 +419,7 @@ namespace chaos_parser {
 		return rule(s);
 	}
 
-	rule extract_line_rule(const std::string &opcl) {
+	rule extractLineRule(const std::string &opcl) {
 		auto s = std::make_shared<impl_rule>(new extr_rule(opcl, true));
 		return rule(s);
 	}
@@ -430,7 +428,6 @@ namespace chaos_parser {
 		auto s = std::make_shared<impl_rule>(new keyword_rule(key, collect));
 		return rule(s);
 	}
-
 
 	class strict_seq_rule: public abs_rule {
 			std::vector<std::shared_ptr<impl_rule> > rl;
@@ -447,11 +444,10 @@ namespace chaos_parser {
 
 	bool strict_seq_rule::parse(parser_context &pc) {
 		INFO("strict_seq_rule::parse()");
-
 		int i = 0;
 		for (auto &x : rl) {
 			if (!x->parse(pc)) {
-				pc.set_error( { ERR_PARSE_SEQ, "Wrong element in sequence" });
+				pc.setError( { ERR_PARSE_SEQ, "Wrong element in sequence" });
 				INFO_LINE(" ** FALSE ");
 				if (i == 0)
 					return false;
@@ -478,4 +474,18 @@ namespace chaos_parser {
 		auto s = std::make_shared<impl_rule>(new alt_rule(a, null()));
 		return rule(s);
 	}
+
+	recursive_rule::recursive_rule() :
+			rule() {
+	}
+
+	void recursive_rule::bind(rule rl) {
+		pimpl->abs_impl = rl.pimpl->abs_impl;
+		INFO_LINE("Regola Bindata	: "<<rl.get_pimpl());
+	}
+
+	bool recursive_rule::parse(parser_context &pc) {
+		return rule::parse(pc);
+	}
+
 }

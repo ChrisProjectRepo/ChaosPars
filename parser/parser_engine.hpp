@@ -1,5 +1,5 @@
-#ifndef __QUERY_PARSER_HPP__
-#define __QUERY_PARSER_HPP__
+#ifndef PARSER_PARSER_ENGINE_HPP_
+#define PARSER_PARSER_ENGINE_HPP_
 
 #include "lexer.hpp"
 #include <memory>
@@ -10,7 +10,6 @@
 #define ERR_PARSE_ALT   -101
 
 namespace chaos_parser {
-
 	//Definizione del parser
 	//Di base vengono usati i token definiti globalmente nel namespace
 	class parser_context {
@@ -24,35 +23,35 @@ namespace chaos_parser {
 		public:
 			parser_context();
 
-			void set_stream(std::istream &in);
-			void set_comment(const std::string &comment_begin, const std::string &comment_end, const std::string &comment_single_line);
+			void setStream(std::istream &in);
+			void setComment(const std::string &comment_begin, const std::string &comment_end, const std::string &comment_single_line);
 
-			token_val try_token(const token &tk);
+			token_val tryToken(const token &tk);
 			std::string extract(const std::string &op, const std::string &cl);
-			std::string extract_line();
+			std::string extractLine();
 
 			void save();
 			void restore();
-			void discard_saved();
+			void discardSaved();
 
-			token_val get_last_token();
+			token_val getLastToken();
 
-			void set_error(const token_val &err_msg);
-			int get_error_code() const {
+			void setError(const token_val &err_msg);
+			int getErrorCode() const {
 				return error_token_msg.first;
 			}
 
-			std::string get_error_string() const {
+			std::string getErrorString() const {
 				return error_token_msg.second;
 			}
-			std::string get_formatted_err_msg();
+			std::string getFormattedErrMsg();
 			std::pair<int, int> get_error_pos() const {
 				return lex.get_pos();
 			}
 
-			void push_token(token_val tk);
-			void push_token(const std::string &s);
-			std::vector<token_val> collect_tokens();
+			void pushToken(token_val tk);
+			void pushToken(const std::string &s);
+			std::vector<token_val> collectTokens();
 	};
 
 //  Implementazione delle regole
@@ -64,6 +63,7 @@ namespace chaos_parser {
 //Classe che definisce la regola con tutti i metodi per interagire tra loro
 	class rule {
 			//Puntatore all'implementazione della regola
+		public:
 			std::shared_ptr<impl_rule> pimpl;
 		public:
 			// Costruttore vuoto
@@ -89,9 +89,19 @@ namespace chaos_parser {
 			rule& operator[](action_t af);
 
 			explicit rule(std::shared_ptr<impl_rule> ir);
+
 			std::shared_ptr<impl_rule> get_pimpl() {
 				return pimpl;
 			}
+	};
+
+	class recursive_rule: public rule {
+
+		public:
+			recursive_rule();
+			void bind(rule);
+			bool parse(parser_context &);
+
 	};
 
 //Sequenza di regole
@@ -106,18 +116,20 @@ namespace chaos_parser {
 //Ripetizione di regole
 	rule operator*(rule a);
 
+	//Regola presente una volta o nessuna
 	rule operator-(rule a);
 
 //Regola per matchare una keyword
 	rule keyword(const std::string &key, bool collect = true);
 
 //Metodi che permettono estrazione di una parte del testo
-	rule extract_rule(const std::string &op, const std::string &cl);
-	rule extract_rule(const std::string &opcl);
-	rule extract_line_rule(const std::string &opcl);
+	rule extractRule(const std::string &op, const std::string &cl);
+	rule extractRule(const std::string &opcl);
+	rule extractLineRule(const std::string &opcl);
 
 //Non necessario, usato per definire regole vuote
 	rule null();
+
 }
 
-#endif
+#endif /* PARSER_PARSER_ENGINE_HPP_ */

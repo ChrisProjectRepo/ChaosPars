@@ -1,6 +1,6 @@
+#include "utils.hpp"
 //#define __INFOMACRO__
 #include "macro.hpp"
-#include "utils.hpp"
 
 namespace tree_struct {
 
@@ -18,7 +18,7 @@ namespace tree_struct {
 
 	void builder::makeLeaf(chaos_parser::parser_context &pc, std::string rule_name) {
 		INFO_LINE("Tocca a:"<<rule_name);
-		auto x = pc.collect_tokens();
+		auto x = pc.collectTokens();
 		if (x.size() < 1)
 			throw std::string("Error in collecting variable");
 		std::string value = x[x.size() - 1].second;
@@ -38,15 +38,45 @@ namespace tree_struct {
 			data_stack_rules = tree_stack.top();
 			INFO_LINE("Nello stack cè "<<data_stack_rules.getRuleName()<<" devo levare "<<rules[it]);
 			if (data_stack_rules.getRuleName() == rules[it]) {
-				//Controllo Usato per gestire la ricorsione, cioè l'asterisco che eviene eseguito ricorsivamente
+				//Controllo Usato per gestire la ripetizione, cioè l'asterisco che eviene eseguito ricorsivamente
 				if (it == (rules.size() - 1)) {
 					it++;
 				}
-				if((data_stack_rules.getRuleName()=="condition")||(data_stack_rules.getRuleName()=="opt_node")){
+				if ((data_stack_rules.getRuleName() == "condition") || (data_stack_rules.getRuleName() == "keyword_and")
+						|| (data_stack_rules.getRuleName() == "keyword_or")) {
+
+					INFO_LINE("CAMBIO NOME DEL PADRE: "<<data_stack_rules.getRuleName());
 					//In questo modo il nodo radice sarà un operatore e i figli saranno le tabelle da cui prendere i dati
 					node_rule->setRuleName(data_stack_rules.getRuleName());
 					node_rule->setValue(data_stack_rules.getNode()->getValue());
-				}else{
+				} else {
+					//Aggiungo figlio al Padre dall'inizio visto che il primo nodo nello stack è l'ultimo dei figli della regola
+					//Quindi inserisco sempre in testa cosi il primo scorre fino all'ultima posizione
+					node_rule->addFrontChildren(data_stack_rules.getNode());
+				}
+				tree_stack.pop();
+			}
+		}
+		//Infine aggiugiamo nello stack la regola di produzione
+		tree_stack.push(node_stack_data(rule_name, node_rule));
+	}
+
+	void builder::makeRecursiveNodeRule(chaos_parser::parser_context &pc, std::string rule_name, std::vector<std::string> rules) {
+		INFO_LINE("Tocca a:"<<rule_name);
+		//Usato per appoggia le regole estratte dallo stack
+		node_stack_data data_stack_rules;
+		//Creo il nodo padre che in un secondo momento andrò ad inserire dentro lo stack
+		std::shared_ptr<tree_node> node_rule = std::make_shared<tree_node>(rule_name);
+		for (int it = rules.size() - 1; it != -1; it--) {
+			data_stack_rules = tree_stack.top();
+			INFO_LINE("Nello stack cè "<<data_stack_rules.getRuleName()<<" devo levare "<<rules[it]);
+			if (data_stack_rules.getRuleName() == rules[it]) {
+				//Controllo Usato per gestire la ripetizione, cioè l'asterisco che eviene eseguito ricorsivamente
+				if ((data_stack_rules.getRuleName() == "condition") || (data_stack_rules.getRuleName() == "opt_node")) {
+					//In questo modo il nodo radice sarà un operatore e i figli saranno le tabelle da cui prendere i dati
+					node_rule->setRuleName(data_stack_rules.getRuleName());
+					node_rule->setValue(data_stack_rules.getNode()->getValue());
+				} else {
 					//Aggiungo figlio al Padre dall'inizio visto che il primo nodo nello stack è l'ultimo dei figli della regola
 					//Quindi inserisco sempre in testa cosi il primo scorre fino all'ultima posizione
 					node_rule->addFrontChildren(data_stack_rules.getNode());
@@ -55,14 +85,16 @@ namespace tree_struct {
 			}
 
 		}
+//		elemento che rimane nello stack a causa della chiamata ricosiva, perchè quando torna indietro nello stack inserisce where_node
+//		anche se dopo interrompe il cammino e cambia percorso di parsing,infatti quando poi cambia e fa where_node prima di fargli
+//		inserire rwhere levo tutti i 2 i where_node presenti. Uno di questi sarà il figlio di rwhere e sara la terminazione dell'iterazione
+		if (tree_stack.top().getRuleName() == "where_node") {
+			tree_stack.pop();
+			INFO_LINE("STO POPPANDO: "<<tree_stack.top().getRuleName());
+		}
 		//Infine aggiugiamo nello stack la regola di produzione
 		tree_stack.push(node_stack_data(rule_name, node_rule));
 	}
-
-
-//	void builder::position_order(std::string type_term) {
-//		INFO_LINE("Tocca a:"<<type_term);
-//	}
 
 	std::shared_ptr<tree_node> builder::get_tree_radix() {
 		node_stack_data data = tree_stack.top();
@@ -78,6 +110,10 @@ namespace tree_struct {
 		} else {
 			//Se non trovo una foglia per ogni figlio del nodo richiamo la visita sui figli fino ad arrivare ad un figlio foglia
 			for (auto i : x->getAllChildren()) {
+				if ((i->getRuleName() == "condition") || (i->getRuleName() == "opt_node")) {
+					std::string temp = (i->getRuleName() + " ");
+					target.append(temp);
+				}
 				treeVisit(i, target);
 			}
 		}
